@@ -1,0 +1,37 @@
+version: 2
+
+sources:
+  - name: raw
+    schema : gz_raw_data    
+    tables:
+      - name: sales
+        identifier: raw_gz_sales
+        description: Greeweez sales with one row per product in orders, revenue and qty
+        loaded_at_field: CAST(date_date AS TIMESTAMP)
+        freshness:
+           warn_after: { count: 90, period: day }
+        tests:
+          - unique : 
+              column_name: "orders_id || pdt_id"
+
+#####
+
+      - name: product
+        identifier: raw_gz_product
+        description: product catalogue with purchase_price
+        columns:
+          - name: products_id
+            description: id of products
+            tests:
+              - unique
+              - not_null
+      - name: ship
+        identifier: raw_gz_ship
+        description: Shipping information with price and date
+        columns:
+          - name: orders_id
+            description : id of orders
+            tests:
+              - unique
+              - not_null
+    
